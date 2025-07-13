@@ -6,7 +6,7 @@ from src.core.domain.schemas.general.user import DeletedUserResponse
 from src.core.domain.schemas.general.user import UpdateUserRequest
 from src.core.domain.schemas.inner.user import CreateUserInner
 from src.core.domain.schemas.inner.user import UserResponseInner
-from src.core.ports.repository import IRepository
+from src.core.interfaces.repositories.db_repository import IRepository
 
 
 class IUserRepository(

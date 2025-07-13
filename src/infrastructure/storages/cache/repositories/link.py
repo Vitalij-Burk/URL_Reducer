@@ -4,8 +4,8 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
+from src.core.base_componenets.repositories.cache.link import ILinkCacheRepository
 from src.core.domain.schemas.inner.link import LinkResponseInner
-from src.core.repositories.cache.link import ILinkCacheRepository
 from src.infrastructure.storages.cache.dal.link import LinkDAL
 
 
@@ -32,19 +32,19 @@ class LinkRepository(ILinkCacheRepository):
         cache_key = f"link:{id}"
         await self.link_dal.delete(cache_key)
 
-    async def cache_by_reduced(self, reduced: str, entity: LinkResponseInner):
-        cache_key = f"link:{reduced}"
+    async def cache_by_short_code(self, short_code: str, entity: LinkResponseInner):
+        cache_key = f"link:{short_code}"
         cache_data = entity.model_dump_json()
         resp = await self.link_dal.create(cache_key, cache_data)
         return resp
 
-    async def get_by_reduced(self, reduced: str) -> LinkResponseInner | None:
-        cache_key = f"link:{reduced}"
+    async def get_by_short_code(self, short_code: str) -> LinkResponseInner | None:
+        cache_key = f"link:{short_code}"
         resp = await self.link_dal.get(cache_key)
         if resp:
             return LinkResponseInner(**json.loads(resp))
         return None
 
-    async def delete_by_reduced(self, reduced: str):
-        cache_key = f"link:{reduced}"
+    async def delete_by_short_code(self, short_code: str):
+        cache_key = f"link:{short_code}"
         await self.link_dal.delete(cache_key)

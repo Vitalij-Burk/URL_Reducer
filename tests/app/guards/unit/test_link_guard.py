@@ -18,8 +18,9 @@ async def test_check_user_ownership_by_link_id_success(fake_users):
         link_id=link_id,
         user_id=current_user.user_id,
         name="test",
-        entry_link="https://yt.com",
-        short_link="fsasdD23",
+        original_url="https://yt.com",
+        short_url="http://localhost:8000/f12Qsds3",
+        short_code="f12Qsds3",
         clicks=1,
     )
 
@@ -38,8 +39,9 @@ async def test_check_user_ownership_by_link_id_forbidden(fake_users):
         link_id=link_id,
         user_id=uuid4(),
         name="test",
-        entry_link="https://yt.com",
-        short_link="fsasdD23",
+        original_url="https://yt.com",
+        short_url="http://localhost:8000/f12Qsds3",
+        short_code="f12Qsds3",
         clicks=1,
     )
 

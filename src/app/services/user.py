@@ -13,9 +13,12 @@ from src.core.domain.schemas.general.user import DeletedUserResponse
 from src.core.domain.schemas.general.user import UpdateUserRequest
 from src.core.domain.schemas.safe.user import CreateUser
 from src.core.domain.schemas.safe.user import UserResponse
-from src.core.utils.serializers.from_pydantic.user import pydantic_create_user_to_inner
-from src.core.utils.serializers.from_pydantic.user import pydantic_inner_user_to_safe
-from src.infrastructure.auth.password import Security
+from src.core.use_cases.user.create import CreateUserUseCase
+from src.core.use_cases.user.delete import DeleteUserUseCase
+from src.core.use_cases.user.get_by_email import GetUserByEmailUseCase
+from src.core.use_cases.user.get_by_id import GetUserByIdUseCase
+from src.core.use_cases.user.update import UpdateUserUseCase
+from src.infrastructure.auth.password_hasher import Password
 from src.infrastructure.storages.manager.user_repository_manager import (
     UserRepositoryManager,
 )
@@ -27,15 +30,17 @@ class UserService:
         self.client = client
         self.user_manager = UserRepositoryManager(db, client)
         self.guard = UserGuard(self.user_manager)
+        self.create_user_use_case = CreateUserUseCase(
+            repo=self.user_manager, hasher=Password
+        )
+        self.get_user_by_id_use_case = GetUserByIdUseCase(repo=self.user_manager)
+        self.get_user_by_email_use_case = GetUserByEmailUseCase(repo=self.user_manager)
+        self.update_user_use_case = UpdateUserUseCase(repo=self.user_manager)
+        self.delete_user_use_case = DeleteUserUseCase(repo=self.user_manager)
 
     async def create_user(self, body: CreateUser) -> UserResponse:
         try:
-            user = await self.user_manager.create(
-                pydantic_create_user_to_inner(
-                    body, Security.get_password_hash(body.password)
-                )
-            )
-            return pydantic_inner_user_to_safe(user)
+            return await self.create_user_use_case.execute(body)
         except IntegrityError as err:
             logger.error(err)
             raise HTTPException(status_code=503, detail=f"Database error: {err}.")
@@ -44,26 +49,22 @@ class UserService:
     async def get_user_by_id(
         self, user_id: UUID, current_user: UserResponse
     ) -> UserResponse:
-        user = await self.user_manager.get_by_id(user_id)
-        return pydantic_inner_user_to_safe(user)
+        return await self.get_user_by_id_use_case.execute(user_id)
 
     @check_user_ownership_by_email
     async def get_user_by_email(
         self, email: str, current_user: UserResponse
     ) -> UserResponse:
-        user = await self.user_manager.get_by_email(email)
-        return pydantic_inner_user_to_safe(user)
+        return await self.get_user_by_email_use_case.execute(email)
 
     @check_user_ownership_by_id
     async def update_user(
         self, user_id: UUID, body: UpdateUserRequest, current_user: UserResponse
     ) -> UserResponse:
-        updated_user = await self.user_manager.update(user_id, body.model_dump())
-        return pydantic_inner_user_to_safe(updated_user)
+        return await self.update_user_use_case.execute(user_id, body)
 
     @check_user_ownership_by_id
     async def delete_user(
         self, user_id: UUID, current_user: UserResponse
     ) -> DeletedUserResponse:
-        deleted_user_resp = await self.user_manager.delete(user_id)
-        return deleted_user_resp
+        return await self.delete_user_use_case.execute(user_id)

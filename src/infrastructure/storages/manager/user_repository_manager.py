@@ -3,11 +3,11 @@ from uuid import UUID
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.base_componenets.repositories.db.user import IUserRepository
 from src.core.domain.logger import logger
 from src.core.domain.schemas.general.user import DeletedUserResponse
 from src.core.domain.schemas.inner.user import CreateUserInner
 from src.core.domain.schemas.inner.user import UserResponseInner
-from src.core.repositories.db.user import IUserRepository
 from src.infrastructure.storages.cache.unit_of_work import UnitOfWork as CacheUnitOfWork
 from src.infrastructure.storages.db.unit_of_work import UnitOfWork as DBUnitOfWork
 

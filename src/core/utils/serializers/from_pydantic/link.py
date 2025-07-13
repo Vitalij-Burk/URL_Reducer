@@ -13,20 +13,21 @@ def pydantic_inner_link_to_safe(link: LinkResponseInner | None) -> LinkResponse:
         link_id=link.link_id,
         user_id=link.user_id,
         name=link.name,
-        entry_link=link.entry_link,
-        short_link=link.short_link,
+        original_url=link.original_url,
+        short_url=link.short_url,
+        short_code=link.short_code,
         clicks=link.clicks,
     )
 
 
 def pydantic_create_link_to_inner(
-    link: CreateLink | None, user_id: UUID, short_link
+    link: CreateLink | None, user_id: UUID, short_code
 ) -> CreateLinkInner | None:
     if link is None:
         return None
     return CreateLinkInner(
         user_id=user_id,
         name=link.name,
-        entry_link=str(link.entry_link),
-        short_link=short_link,
+        original_url=str(link.original_url),
+        short_code=short_code,
     )

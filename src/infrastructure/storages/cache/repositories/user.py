@@ -5,8 +5,8 @@ from uuid import UUID
 from pydantic import EmailStr
 from redis.asyncio import Redis
 
+from src.core.base_componenets.repositories.cache.user import IUserCacheRepository
 from src.core.domain.schemas.inner.user import UserResponseInner
-from src.core.repositories.cache.user import IUserCacheRepository
 from src.infrastructure.storages.cache.dal.user import UserDAL
 
 

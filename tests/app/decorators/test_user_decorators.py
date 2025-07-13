@@ -10,7 +10,6 @@ from src.app.decorators.user import check_user_ownership_by_id
 async def test_check_user_ownership_by_id(fake_users):
     current_user = fake_users.safe
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_id.return_value = None
 
     class Service:
         def __init__(self):
@@ -33,7 +32,6 @@ async def test_check_user_ownership_by_id(fake_users):
 @pytest.mark.asyncio
 async def test_check_user_ownership_by_id_value_error():
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_id.return_value = None
 
     class Service:
         def __init__(self):
@@ -41,7 +39,7 @@ async def test_check_user_ownership_by_id_value_error():
 
         @check_user_ownership_by_id
         async def method(self):
-            return
+            pass
 
     service = Service()
 
@@ -53,7 +51,6 @@ async def test_check_user_ownership_by_id_value_error():
 async def test_check_user_ownership_by_email(fake_users):
     current_user = fake_users.safe
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_email.return_value = None
 
     class Service:
         def __init__(self):
@@ -76,7 +73,6 @@ async def test_check_user_ownership_by_email(fake_users):
 @pytest.mark.asyncio
 async def test_check_user_ownership_by_email_value_error():
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_email.return_value = None
 
     class Service:
         def __init__(self):
@@ -84,7 +80,7 @@ async def test_check_user_ownership_by_email_value_error():
 
         @check_user_ownership_by_email
         async def method(self):
-            return "ok"
+            pass
 
     service = Service()
 

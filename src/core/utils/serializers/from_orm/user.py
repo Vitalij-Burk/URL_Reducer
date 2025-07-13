@@ -1,5 +1,5 @@
-from src.core.domain.models import User
 from src.core.domain.schemas.inner.user import UserResponseInner
+from src.infrastructure.storages.db.dal.models import User
 
 
 def db_user_to_pydantic_inner_user(user: User | None) -> UserResponseInner | None:

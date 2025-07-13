@@ -7,14 +7,6 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning
-  test_cache:
-    container_name: test_cache
-    image: redis:latest
-    ports:
-      - "6380:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --save 60 1 --loglevel warning
   db:
    container_name: db
    image: postgres:latest
@@ -25,18 +17,6 @@ services:
     - POSTGRES_DB=url_reducer
    ports:
     - "5433:5432"
-   networks:
-    - custom
-  test_db:
-   container_name: test_db
-   image: postgres:latest
-   restart: always
-   environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_DB=url_reducer_test
-   ports:
-    - "5434:5432"
    networks:
     - custom
 networks:

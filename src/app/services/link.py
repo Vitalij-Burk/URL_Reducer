@@ -28,17 +28,12 @@ class LinkService:
     async def create_link(
         self, body: CreateLink, current_user: UserResponse
     ) -> LinkResponse:
-        # try:
         link = await self.link_manager.create(
             pydantic_create_link_to_inner(
                 body, current_user.user_id, get_random_string()
             )
         )
         return pydantic_inner_link_to_safe(link)
-        # except IntegrityError as err:
-        #     logger.error(err)
-        #     raise HTTPException(
-        #         status_code=503, detail=f"Database error: {err}.")
 
     @check_user_ownership_by_link_id
     async def get_link_by_id(

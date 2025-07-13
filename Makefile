@@ -6,6 +6,3 @@ docker_down:
 
 upgrade_alembic_src:
 	set PYTHONPATH=./src && alembic -c src/alembic.ini upgrade heads
-
-upgrade_alembic_tests:
-	set PYTHONPATH=./src && alembic -c tests/alembic.ini upgrade heads

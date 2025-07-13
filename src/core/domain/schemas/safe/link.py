@@ -7,13 +7,14 @@ from pydantic import HttpUrl
 
 class CreateLink(TunedModel):
     name: constr(max_length=20)
-    entry_link: HttpUrl
+    original_url: HttpUrl
 
 
 class LinkResponse(TunedModel):
     link_id: UUID
     user_id: UUID
     name: constr(max_length=20)
-    entry_link: HttpUrl
-    short_link: str
+    original_url: HttpUrl
+    short_url: HttpUrl
+    short_code: str
     clicks: int

@@ -1,5 +1,5 @@
-from src.core.domain.models import Link
 from src.core.domain.schemas.inner.link import LinkResponseInner
+from src.infrastructure.storages.db.dal.models import Link
 
 
 def db_link_to_pydantic_inner_link(link: Link | None) -> LinkResponseInner | None:
@@ -9,7 +9,7 @@ def db_link_to_pydantic_inner_link(link: Link | None) -> LinkResponseInner | Non
         link_id=link.link_id,
         user_id=link.user_id,
         name=link.name,
-        entry_link=link.entry_link,
-        short_link=link.short_link,
+        original_url=link.original_url,
+        short_code=link.short_code,
         clicks=link.clicks,
     )

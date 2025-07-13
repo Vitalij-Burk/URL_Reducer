@@ -11,7 +11,7 @@ from src.infrastructure.auth.auth import Authentication
 from src.infrastructure.auth.jwt import AccessToken
 
 
-class LoginService:
+class AuthService:
     def __init__(self, db: AsyncSession, client: Redis):
         self.db = db
         self.client = client

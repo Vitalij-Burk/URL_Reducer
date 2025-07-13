@@ -1,7 +1,7 @@
 from uuid import uuid4
 
-from src.core.domain.models import User
 from src.core.utils.serializers.from_orm.user import db_user_to_pydantic_inner_user
+from src.infrastructure.storages.db.dal.models import User
 
 
 def test_db_user_to_pydantic_inner_user_success():

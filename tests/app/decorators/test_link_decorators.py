@@ -11,7 +11,6 @@ async def test_check_user_ownership_by_link_id(fake_users):
     current_user = fake_users.safe
     link_id = uuid4()
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_link_id.return_value = None
 
     class Service:
         def __init__(self):
@@ -34,7 +33,6 @@ async def test_check_user_ownership_by_link_id(fake_users):
 @pytest.mark.asyncio
 async def test_check_user_ownership_by_link_id_value_error():
     mock_guard = AsyncMock()
-    mock_guard.check_user_ownership_by_link_id.return_value = None
 
     class Service:
         def __init__(self):
@@ -42,7 +40,7 @@ async def test_check_user_ownership_by_link_id_value_error():
 
         @check_user_ownership_by_link_id
         async def method(self):
-            return
+            pass
 
     service = Service()
 

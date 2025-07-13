@@ -11,27 +11,27 @@ from starlette import status
 from src.core.domain.schemas.safe.user import UserResponse
 from src.core.domain.settings import Config
 from src.core.utils.serializers.from_pydantic.user import pydantic_inner_user_to_safe
-from src.infrastructure.auth.password import Security
+from src.infrastructure.auth.password_hasher import Password
 from src.infrastructure.storages.cache.client import get_redis_client
 from src.infrastructure.storages.manager.user_repository_manager import (
     UserRepositoryManager,
 )
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 class Authentication:
     def __init__(self, session: AsyncSession, client: Redis):
         self.session = session
         self.client = client
+        self.user_manager = UserRepositoryManager(session, client)
 
     async def authenticate_user(self, email: str, password: str):
-        user_manager = UserRepositoryManager(self.session, self.client)
-        user = await user_manager.get_by_email(email)
+        user = await self.user_manager.get_by_email(email)
         if not user:
             return
-        if not Security.verify_password(password, user.hashed_password):
+        if not Password.verify_password(password, user.hashed_password):
             return
         return user
 

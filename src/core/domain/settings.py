@@ -1,4 +1,5 @@
 class Config:
+    BASE_URL: str = "http://localhost:8000"
     REAL_DB_URL: str = (
         "postgresql+asyncpg://postgres:postgres@localhost:5433/url_reducer"
     )

@@ -49,6 +49,6 @@ class Link(BaseTemplate):
         nullable=False,
     )
     name = Column(String, nullable=False)
-    entry_link = Column(String, nullable=False)
-    short_link = Column(String, unique=True, nullable=False)
+    original_url = Column(String, nullable=False)
+    short_code = Column(String, unique=True, nullable=False)
     clicks = Column(Integer, default=0)

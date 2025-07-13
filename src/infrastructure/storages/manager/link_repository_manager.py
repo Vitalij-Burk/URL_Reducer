@@ -3,11 +3,11 @@ from uuid import UUID
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.base_componenets.repositories.db.link import ILinkRepository
 from src.core.domain.logger import logger
 from src.core.domain.schemas.general.link import DeletedLinkResponse
 from src.core.domain.schemas.inner.link import CreateLinkInner
 from src.core.domain.schemas.inner.link import LinkResponseInner
-from src.core.repositories.db.link import ILinkRepository
 from src.infrastructure.storages.cache.unit_of_work import UnitOfWork as CacheUnitOfWork
 from src.infrastructure.storages.db.unit_of_work import UnitOfWork as DBUnitOfWork
 
@@ -22,14 +22,14 @@ class LinkRepositoryManager(ILinkRepository):
             await uow.start_pipeline()
             await uow.users.delete_by_id(link.user_id)
             await uow.links.cache_by_id(link.link_id, link)
-            await uow.links.cache_by_reduced(link.short_link, link)
+            await uow.links.cache_by_short_code(link.short_code, link)
 
     async def _delete_cached_link(self, link: LinkResponseInner):
         async with self.cache_uow as uow:
             await uow.start_pipeline()
             await uow.users.delete_by_id(link.user_id)
             await uow.links.delete_by_id(link.link_id)
-            await uow.links.delete_by_reduced(link.short_link)
+            await uow.links.delete_by_short_code(link.short_code)
 
     async def create(self, entity: CreateLinkInner) -> LinkResponseInner:
         async with self.db_uow as uow:
@@ -53,13 +53,13 @@ class LinkRepositoryManager(ILinkRepository):
 
         return link
 
-    async def get_by_reduced(self, reduced: str) -> LinkResponseInner | None:
-        link = await self.cache_uow.links.get_by_reduced(reduced)
+    async def get_by_short_code(self, short_code: str) -> LinkResponseInner | None:
+        link = await self.cache_uow.links.get_by_short_code(short_code)
         if link is not None:
             return link
 
         async with self.db_uow as uow:
-            link = await uow.links.get_by_reduced(reduced)
+            link = await uow.links.get_by_short_code(short_code)
 
         if link is not None:
             try:

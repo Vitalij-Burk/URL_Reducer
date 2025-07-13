@@ -1,10 +1,12 @@
 from passlib.context import CryptContext
 
+from src.core.interfaces.password_hasher import IPassword
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class Security:
+class Password(IPassword):
     @staticmethod
     def get_password_hash(password: str) -> str:
         return pwd_context.hash(password)

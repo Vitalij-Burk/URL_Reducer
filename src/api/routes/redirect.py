@@ -12,12 +12,12 @@ from src.app.services.redirect import RedirectService
 redirect_router = APIRouter()
 
 
-@redirect_router.get("/{short_link}")
+@redirect_router.get("/{short_code}")
 async def redirect(
-    short_link: str,
+    short_code: str,
     db: AsyncSession = Depends(get_db),
     client: Redis = Depends(get_redis_client),
 ) -> RedirectResponse:
     redirect_service = RedirectService(db, client)
-    redirect_response = await redirect_service.redirect(short_link)
+    redirect_response = await redirect_service.redirect(short_code)
     return redirect_response

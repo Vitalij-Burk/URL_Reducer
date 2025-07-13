@@ -20,7 +20,7 @@ async def test_create_link_success(fake_users, fake_links):
     service.link_manager = AsyncMock()
     service.link_manager.create.return_value = fake_links.inner
 
-    create_link_payload = CreateLink(name="test", entry_link="https://yt.com/")
+    create_link_payload = CreateLink(name="test", original_url="https://yt.com/")
 
     with patch(
         "src.app.services.link.get_random_string", return_value="fdsf12As"
@@ -41,7 +41,7 @@ async def test_create_link_success(fake_users, fake_links):
         service.link_manager.create.assert_called_once()
         mock_to_safe.assert_called_once_with(fake_links.inner)
 
-        assert str(result.entry_link) == "https://yt.com/"
+        assert str(result.original_url) == "https://yt.com/"
 
 
 @pytest.mark.asyncio

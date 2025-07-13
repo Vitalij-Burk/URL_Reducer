@@ -6,7 +6,7 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.core.domain.models import User
+from src.infrastructure.storages.db.dal.models import User
 
 
 class UserDAL:

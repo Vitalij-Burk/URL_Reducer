@@ -15,14 +15,14 @@ class RedirectService:
         self.client = client
         self.link_manager = LinkRepositoryManager(db, client)
 
-    async def redirect(self, short_link: str) -> RedirectResponse:
-        link = await self.link_manager.get_by_reduced(short_link)
+    async def redirect(self, short_code: str) -> RedirectResponse:
+        link = await self.link_manager.get_by_short_code(short_code)
         if link:
             link = pydantic_inner_link_to_safe(link)
         else:
-            raise HTTPException(status_code=404, detail="Entry link not found.")
+            raise HTTPException(status_code=404, detail="Original URL link not found.")
         if link.clicks >= 10:
             raise HTTPException(status_code=406, detail="Limit of link uses exceeded.")
         updated_clicks = {"clicks": link.clicks + 1}
         await self.link_manager.update(link.link_id, updated_clicks)
-        return RedirectResponse(url=link.entry_link)
+        return RedirectResponse(url=link.original_url)
