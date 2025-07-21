@@ -1,7 +1,7 @@
 from functools import wraps
 from uuid import UUID
 
-from src.core.domain.schemas.safe.user import UserResponse
+from src.core.domain.schemas.pydantic.user import UserResponse
 
 
 def check_user_ownership_by_id(func):

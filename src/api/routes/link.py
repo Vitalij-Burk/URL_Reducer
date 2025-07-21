@@ -9,12 +9,12 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.services.link import LinkService
-from src.core.domain.schemas.general.link import DeletedLinkResponse
-from src.core.domain.schemas.general.link import UpdateLinkRequest
-from src.core.domain.schemas.safe.link import CreateLink
-from src.core.domain.schemas.safe.link import LinkResponse
-from src.core.domain.schemas.safe.user import UserResponse
-from src.infrastructure.auth.auth import get_current_user_from_token
+from src.core.domain.schemas.pydantic.link import CreateLink
+from src.core.domain.schemas.pydantic.link import DeletedLinkResponse
+from src.core.domain.schemas.pydantic.link import LinkResponse
+from src.core.domain.schemas.pydantic.link import UpdateLinkRequest
+from src.core.domain.schemas.pydantic.user import UserResponse
+from src.infrastructure.auth.authenticator import get_current_user_from_token
 
 
 link_router = APIRouter()

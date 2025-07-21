@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.interfaces.repositories.units_of_work.db import IUnitOfWork
 from src.infrastructure.storages.db.repositories.link import LinkRepository
 from src.infrastructure.storages.db.repositories.user import UserRepository
 
 
-class UnitOfWork:
+class UnitOfWork(IUnitOfWork):
     def __init__(self, session: AsyncSession):
         self.session = session
         self.users = UserRepository(session)

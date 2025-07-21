@@ -2,8 +2,8 @@ from abc import abstractmethod
 
 from pydantic import EmailStr
 
-from src.core.domain.schemas.inner.user import UserResponseInner
-from src.core.interfaces.repositories.cache_repository import ICacheRepository
+from src.core.domain.schemas.dataclasses.user import UserResponseInner
+from src.core.interfaces.repositories.cache import ICacheRepository
 
 
 class IUserCacheRepository(ICacheRepository[UserResponseInner]):

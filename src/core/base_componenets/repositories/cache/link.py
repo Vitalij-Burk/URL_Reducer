@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from src.core.domain.schemas.inner.link import LinkResponseInner
-from src.core.interfaces.repositories.cache_repository import ICacheRepository
+from src.core.domain.schemas.dataclasses.link import LinkResponseInner
+from src.core.interfaces.repositories.cache import ICacheRepository
 
 
 class ILinkCacheRepository(ICacheRepository[LinkResponseInner]):

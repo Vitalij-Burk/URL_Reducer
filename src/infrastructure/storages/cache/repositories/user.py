@@ -1,4 +1,3 @@
-import json
 from typing import Optional
 from uuid import UUID
 
@@ -6,7 +5,9 @@ from pydantic import EmailStr
 from redis.asyncio import Redis
 
 from src.core.base_componenets.repositories.cache.user import IUserCacheRepository
-from src.core.domain.schemas.inner.user import UserResponseInner
+from src.core.domain.schemas.dataclasses.user import UserResponseInner
+from src.core.utils.serializers.cache.out.user import deserialize_user_from_cache
+from src.core.utils.serializers.cache.to.user import serialize_user_to_cache
 from src.infrastructure.storages.cache.dal.user import UserDAL
 
 
@@ -18,7 +19,7 @@ class UserRepository(IUserCacheRepository):
 
     async def cache_by_id(self, id: UUID, entity: UserResponseInner):
         cache_key = f"user:{id}"
-        cache_data = entity.model_dump_json()
+        cache_data = serialize_user_to_cache(entity)
         resp = await self.user_dal.create(cache_key, cache_data)
         return resp
 
@@ -26,7 +27,7 @@ class UserRepository(IUserCacheRepository):
         cache_key = f"user:{id}"
         resp = await self.user_dal.get(cache_key)
         if resp:
-            return UserResponseInner(**json.loads(resp))
+            return deserialize_user_from_cache(resp)
         return None
 
     async def delete_by_id(self, id: UUID):
@@ -35,7 +36,7 @@ class UserRepository(IUserCacheRepository):
 
     async def cache_by_email(self, email: EmailStr, entity: UserResponseInner):
         cache_key = f"user:{email}"
-        cache_data = entity.model_dump_json()
+        cache_data = serialize_user_to_cache(entity)
         resp = await self.user_dal.create(cache_key, cache_data)
         return resp
 
@@ -43,7 +44,7 @@ class UserRepository(IUserCacheRepository):
         cache_key = f"user:{email}"
         resp = await self.user_dal.get(cache_key)
         if resp:
-            return UserResponseInner(**json.loads(resp))
+            return deserialize_user_from_cache(resp)
         return None
 
     async def delete_by_email(self, email: EmailStr):

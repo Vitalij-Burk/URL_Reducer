@@ -4,10 +4,12 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.base_componenets.repositories.db.user import IUserRepository
+from src.core.domain.exceptions.base import AppError
 from src.core.domain.logger import logger
-from src.core.domain.schemas.general.user import DeletedUserResponse
-from src.core.domain.schemas.inner.user import CreateUserInner
-from src.core.domain.schemas.inner.user import UserResponseInner
+from src.core.domain.schemas.dataclasses.user import CreateUserInner
+from src.core.domain.schemas.dataclasses.user import DeletedUserResponseInner
+from src.core.domain.schemas.dataclasses.user import UpdateUserRequestInner
+from src.core.domain.schemas.dataclasses.user import UserResponseInner
 from src.infrastructure.storages.cache.unit_of_work import UnitOfWork as CacheUnitOfWork
 from src.infrastructure.storages.db.unit_of_work import UnitOfWork as DBUnitOfWork
 
@@ -35,7 +37,12 @@ class UserRepositoryManager(IUserRepository):
         return user
 
     async def get_by_id(self, id: UUID) -> UserResponseInner | None:
-        user = await self.cache_uow.users.get_by_id(id)
+        user = None
+        try:
+            user = await self.cache_uow.users.get_by_id(id)
+        except AppError as err:
+            logger.info(f"Cache access error: '{err}'")
+
         if user is not None:
             return user
 
@@ -45,13 +52,18 @@ class UserRepositoryManager(IUserRepository):
         if user is not None:
             try:
                 await self._cache_user(user)
-            except Exception as e:
-                logger.error(f"Cache error: {e}")
+            except AppError as err:
+                logger.error(f"Cache set error: {err}")
 
         return user
 
     async def get_by_email(self, email: str) -> UserResponseInner | None:
-        user = await self.cache_uow.users.get_by_email(email)
+        user = None
+        try:
+            user = await self.cache_uow.users.get_by_email(email)
+        except AppError as err:
+            logger.info(f"Cache access error: '{err}'")
+
         if user is not None:
             return user
 
@@ -61,13 +73,13 @@ class UserRepositoryManager(IUserRepository):
         if user is not None:
             try:
                 await self._cache_user(user)
-            except Exception as e:
-                logger.error(f"Cache error: {e}")
+            except AppError as err:
+                logger.error(f"Cache set error: '{err}'")
 
         return user
 
     async def update(
-        self, id: UUID, update_user_params: dict
+        self, id: UUID, update_user_params: UpdateUserRequestInner
     ) -> UserResponseInner | None:
         async with self.db_uow as uow:
             user = await uow.users.update(id, update_user_params)
@@ -76,7 +88,7 @@ class UserRepositoryManager(IUserRepository):
         finally:
             return user
 
-    async def delete(self, id: UUID) -> DeletedUserResponse | None:
+    async def delete(self, id: UUID) -> DeletedUserResponseInner | None:
         async with self.db_uow as uow:
             user = await uow.users.get_by_id(id)
         try:

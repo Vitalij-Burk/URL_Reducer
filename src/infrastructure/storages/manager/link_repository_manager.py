@@ -4,10 +4,12 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.base_componenets.repositories.db.link import ILinkRepository
+from src.core.domain.exceptions.base import AppError
 from src.core.domain.logger import logger
-from src.core.domain.schemas.general.link import DeletedLinkResponse
-from src.core.domain.schemas.inner.link import CreateLinkInner
-from src.core.domain.schemas.inner.link import LinkResponseInner
+from src.core.domain.schemas.dataclasses.link import CreateLinkInner
+from src.core.domain.schemas.dataclasses.link import DeletedLinkResponseInner
+from src.core.domain.schemas.dataclasses.link import LinkResponseInner
+from src.core.domain.schemas.dataclasses.link import UpdateLinkRequestInner
 from src.infrastructure.storages.cache.unit_of_work import UnitOfWork as CacheUnitOfWork
 from src.infrastructure.storages.db.unit_of_work import UnitOfWork as DBUnitOfWork
 
@@ -34,11 +36,18 @@ class LinkRepositoryManager(ILinkRepository):
     async def create(self, entity: CreateLinkInner) -> LinkResponseInner:
         async with self.db_uow as uow:
             link = await uow.links.create(entity)
-        await self.cache_uow.users.delete_by_id(link.user_id)
-        return link
+        try:
+            await self.cache_uow.users.delete_by_id(link.user_id)
+        finally:
+            return link
 
     async def get_by_id(self, id: UUID) -> LinkResponseInner | None:
-        link = await self.cache_uow.links.get_by_id(id)
+        link = None
+        try:
+            link = await self.cache_uow.links.get_by_id(id)
+        except AppError as err:
+            logger.info(f"Cache access error: '{err}'")
+
         if link is not None:
             return link
 
@@ -54,7 +63,12 @@ class LinkRepositoryManager(ILinkRepository):
         return link
 
     async def get_by_short_code(self, short_code: str) -> LinkResponseInner | None:
-        link = await self.cache_uow.links.get_by_short_code(short_code)
+        link = None
+        try:
+            link = await self.cache_uow.links.get_by_short_code(short_code)
+        except AppError as err:
+            logger.info(f"Cache access error: '{err}'")
+
         if link is not None:
             return link
 
@@ -70,15 +84,18 @@ class LinkRepositoryManager(ILinkRepository):
         return link
 
     async def update(
-        self, id: UUID, update_link_params: dict
+        self, id: UUID, update_link_params: UpdateLinkRequestInner
     ) -> LinkResponseInner | None:
+        print(type(update_link_params))
         async with self.db_uow as uow:
             link = await uow.links.update(id, update_link_params)
-        await self._delete_cached_link(link)
-        await self._cache_link(link)
-        return link
+        try:
+            await self._delete_cached_link(link)
+            await self._cache_link(link)
+        finally:
+            return link
 
-    async def delete(self, id: UUID) -> DeletedLinkResponse | None:
+    async def delete(self, id: UUID) -> DeletedLinkResponseInner | None:
         async with self.db_uow as uow:
             link = await uow.links.get_by_id(id)
         try:

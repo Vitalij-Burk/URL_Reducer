@@ -1,16 +1,16 @@
 from passlib.context import CryptContext
 
-from src.core.interfaces.password_hasher import IPassword
+from src.core.interfaces.crypto_provider import ICryptoProvider
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class Password(IPassword):
-    @staticmethod
-    def get_password_hash(password: str) -> str:
+class PasswordHasher(ICryptoProvider):
+    @classmethod
+    def create(cls, password: str) -> str:
         return pwd_context.hash(password)
 
-    @staticmethod
-    def verify_password(plain_password: str, hashed_password: str) -> bool:
+    @classmethod
+    def verify(cls, plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)

@@ -1,0 +1,25 @@
+from src.core.domain.schemas.dataclasses.user import CreateUserInner
+from src.core.domain.schemas.dataclasses.user import UpdateUserRequestInner
+from src.core.domain.schemas.pydantic.user import CreateUser
+from src.core.domain.schemas.pydantic.user import UpdateUserRequest
+
+
+def serialize_to_create_inner_user(
+    user: CreateUser | None, hashed_password: str
+) -> CreateUserInner | None:
+    if user is None:
+        return None
+    return CreateUserInner(
+        name=str(user.name), email=user.email, hashed_password=hashed_password
+    )
+
+
+def serialize_to_update_inner_user(
+    update_user_params: UpdateUserRequest | None,
+) -> UpdateUserRequestInner | None:
+    if update_user_params is None:
+        return None
+    return UpdateUserRequestInner(
+        email=str(update_user_params.email) if update_user_params.email else None,
+        name=str(update_user_params.name) if update_user_params.name else None,
+    )

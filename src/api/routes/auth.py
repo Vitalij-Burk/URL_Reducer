@@ -6,7 +6,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.services.auth import AuthService
-from src.core.domain.schemas.general.auth import Token
+from src.core.domain.schemas.pydantic.auth import Token
 from src.infrastructure.storages.cache.client import get_redis_client
 
 

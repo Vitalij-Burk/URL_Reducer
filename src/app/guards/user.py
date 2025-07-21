@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from src.core.domain.http_errors import ForbiddenError
-from src.core.domain.schemas.safe.user import UserResponse
+from src.core.domain.exceptions.user import UserForbidden
+from src.core.domain.schemas.pydantic.user import UserResponse
 from src.infrastructure.storages.manager.user_repository_manager import (
     UserRepositoryManager,
 )
@@ -15,10 +15,10 @@ class UserGuard:
         self, user_id: UUID, current_user: UserResponse
     ):
         if user_id != current_user.user_id:
-            raise ForbiddenError
+            raise UserForbidden(current_user.user_id, user_id)
 
     async def check_user_ownership_by_email(
         self, email: str, current_user: UserResponse
     ):
         if email != current_user.email:
-            raise ForbiddenError
+            raise UserForbidden(current_user.email, email)

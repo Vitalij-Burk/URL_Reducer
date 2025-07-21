@@ -1,15 +1,18 @@
 from abc import abstractmethod
 
-from src.core.domain.schemas.general.link import DeletedLinkResponse
-from src.core.domain.schemas.general.link import UpdateLinkRequest
-from src.core.domain.schemas.inner.link import CreateLinkInner
-from src.core.domain.schemas.inner.link import LinkResponseInner
-from src.core.interfaces.repositories.db_repository import IRepository
+from src.core.domain.schemas.dataclasses.link import CreateLinkInner
+from src.core.domain.schemas.dataclasses.link import DeletedLinkResponseInner
+from src.core.domain.schemas.dataclasses.link import LinkResponseInner
+from src.core.domain.schemas.dataclasses.link import UpdateLinkRequestInner
+from src.core.interfaces.repositories.db import IRepository
 
 
 class ILinkRepository(
     IRepository[
-        CreateLinkInner, UpdateLinkRequest, DeletedLinkResponse, LinkResponseInner
+        CreateLinkInner,
+        UpdateLinkRequestInner,
+        DeletedLinkResponseInner,
+        LinkResponseInner,
     ]
 ):
     @abstractmethod

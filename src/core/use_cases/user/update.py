@@ -1,15 +1,16 @@
 from uuid import UUID
 
 from src.core.base_componenets.repositories.db.user import IUserRepository
-from src.core.domain.schemas.general.user import UpdateUserRequest
-from src.core.domain.schemas.safe.user import UserResponse
-from src.core.utils.serializers.from_pydantic.user import pydantic_inner_user_to_safe
+from src.core.domain.schemas.dataclasses.user import UpdateUserRequestInner
+from src.core.domain.schemas.dataclasses.user import UserResponseInner
 
 
 class UpdateUserUseCase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    async def execute(self, user_id: UUID, body: UpdateUserRequest) -> UserResponse:
-        updated_user = await self.repo.update(user_id, body.model_dump())
-        return pydantic_inner_user_to_safe(updated_user)
+    async def execute(
+        self, user_id: UUID, update_user_params: UpdateUserRequestInner
+    ) -> UserResponseInner:
+        updated_user = await self.repo.update(user_id, update_user_params)
+        return updated_user

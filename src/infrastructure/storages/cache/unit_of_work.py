@@ -1,10 +1,11 @@
 from redis.asyncio import Redis
 
+from src.core.interfaces.repositories.units_of_work.cache import IUnitOfWork
 from src.infrastructure.storages.cache.repositories.link import LinkRepository
 from src.infrastructure.storages.cache.repositories.user import UserRepository
 
 
-class UnitOfWork:
+class UnitOfWork(IUnitOfWork):
     def __init__(self, client: Redis):
         self.client = client
         self.users = UserRepository(client)

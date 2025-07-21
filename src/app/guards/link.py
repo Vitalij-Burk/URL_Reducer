@@ -1,7 +1,8 @@
 from uuid import UUID
 
-from src.core.domain.http_errors import ForbiddenError
-from src.core.domain.schemas.safe.user import UserResponse
+from src.core.domain.exceptions.link import LinkForbidden
+from src.core.domain.exceptions.link import LinkNotFound
+from src.core.domain.schemas.pydantic.user import UserResponse
 from src.infrastructure.storages.manager.link_repository_manager import (
     LinkRepositoryManager,
 )
@@ -16,4 +17,4 @@ class LinkGuard:
     ):
         link = await self.link_manager.get_by_id(link_id)
         if link.user_id != current_user.user_id:
-            raise ForbiddenError
+            raise LinkForbidden(link.user_id, current_user.user_id)

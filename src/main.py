@@ -6,6 +6,10 @@ from api.routes.user import user_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api.exception_handler import exception_handler
+from src.core.domain.exceptions.base import AppError
+from src.core.domain.exceptions.user import UserAlreadyExists
+
 
 app = FastAPI()
 
@@ -23,6 +27,9 @@ app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(user_router, prefix="/user", tags=["User"])
 app.include_router(link_router, prefix="/link", tags=["Link"])
 app.include_router(redirect_router, tags=["Redirect"])
+
+
+app.add_exception_handler(AppError, exception_handler)
 
 
 if __name__ == "__main__":
