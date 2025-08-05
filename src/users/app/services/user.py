@@ -1,0 +1,84 @@
+from uuid import UUID
+
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.auth.infrastructure.auth.password_hasher import PasswordHasher
+from src.users.app.decorators import check_user_ownership_by_email
+from src.users.app.decorators import check_user_ownership_by_id
+from src.users.app.guards import UserGuard
+from src.users.core.domain.schemas.out.user import CreateUserRequest
+from src.users.core.domain.schemas.out.user import DeletedUserResponse
+from src.users.core.domain.schemas.out.user import UpdateUserRequest
+from src.users.core.domain.schemas.out.user import UserResponse
+from src.users.core.use_cases.user.create import CreateUserUseCase
+from src.users.core.use_cases.user.delete import DeleteUserUseCase
+from src.users.core.use_cases.user.get_by_email import GetUserByEmailUseCase
+from src.users.core.use_cases.user.get_by_id import GetUserByIdUseCase
+from src.users.core.use_cases.user.update import UpdateUserUseCase
+from src.users.core.utils.serializers.from_inner import serialize_to_safe_deleted_user
+from src.users.core.utils.serializers.from_inner import serialize_to_safe_user
+from src.users.core.utils.serializers.from_safe import serialize_to_create_inner_user
+from src.users.core.utils.serializers.from_safe import serialize_to_update_inner_user
+from src.users.infrastructure.storages.user_repository_manager import (
+    UserRepositoryManager,
+)
+
+
+class UserService:
+    def __init__(self, db: AsyncSession, client: Redis):
+        self.db = db
+        self.client = client
+        self.user_manager = UserRepositoryManager(db, client)
+        self.guard = UserGuard(self.user_manager)
+        self.hasher = PasswordHasher()
+        self.create_user_use_case = CreateUserUseCase(
+            repo=self.user_manager, hasher=self.hasher
+        )
+        self.get_user_by_id_use_case = GetUserByIdUseCase(repo=self.user_manager)
+        self.get_user_by_email_use_case = GetUserByEmailUseCase(repo=self.user_manager)
+        self.update_user_use_case = UpdateUserUseCase(repo=self.user_manager)
+        self.delete_user_use_case = DeleteUserUseCase(repo=self.user_manager)
+
+    async def create_user(self, body: CreateUserRequest) -> UserResponse:
+        return serialize_to_safe_user(
+            await self.create_user_use_case.execute(
+                serialize_to_create_inner_user(
+                    body, PasswordHasher.create(body.password)
+                )
+            )
+        )
+
+    @check_user_ownership_by_id
+    async def get_user_by_id(
+        self, user_id: UUID, current_user_id: UUID
+    ) -> UserResponse:
+        return serialize_to_safe_user(
+            await self.get_user_by_id_use_case.execute(user_id)
+        )
+
+    @check_user_ownership_by_email
+    async def get_user_by_email(
+        self, email: str, current_user_email: str
+    ) -> UserResponse:
+        return serialize_to_safe_user(
+            await self.get_user_by_email_use_case.execute(email)
+        )
+
+    @check_user_ownership_by_id
+    async def update_user(
+        self, user_id: UUID, body: UpdateUserRequest, current_user_id: UUID
+    ) -> UserResponse:
+        return serialize_to_safe_user(
+            await self.update_user_use_case.execute(
+                user_id, serialize_to_update_inner_user(body)
+            )
+        )
+
+    @check_user_ownership_by_id
+    async def delete_user(
+        self, user_id: UUID, current_user_id: UUID
+    ) -> DeletedUserResponse:
+        return serialize_to_safe_deleted_user(
+            deleted_user_id=await self.delete_user_use_case.execute(user_id)
+        )

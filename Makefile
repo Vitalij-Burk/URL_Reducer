@@ -4,5 +4,8 @@ docker_up:
 docker_down:
 	docker compose -f docker-compose-local.yaml down --remove-orphans
 
-upgrade_alembic_src:
+alembic_upgrade:
 	set PYTHONPATH=./src && alembic -c src/alembic.ini upgrade heads
+
+start:
+	python src/main.py

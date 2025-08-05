@@ -1,4 +1,4 @@
 from logging import getLogger
 
 
-logger = getLogger(__name__)
+app_logger = getLogger(__name__)

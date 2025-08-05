@@ -1,43 +1,49 @@
-from src.core.domain.logger import logger
+from src.core.domain.logger import app_logger
 
 
 class AppError(Exception):
-    pass
+    def __init__(self, module: str, *args, **kwargs):
+        self.module = module
 
 
 class NotFound(AppError):
-    def __init__(self, resource, id):
+    def __init__(self, module: str, resource, id):
         self.resource = resource
         self.id = id
-        super().__init__(f"'{str(resource)}' '{str(id)}' not found.")
+        super().__init__(module, f"'{str(resource)}' '{str(id)}' not found.")
 
 
 class Forbidden(AppError):
-    def __init__(self, resource, current_id, req_id):
+    def __init__(self, module: str, resource, current_id, req_id):
         self.resource = resource
         self.current_id = current_id
         self.req_id = req_id
         super().__init__(
-            f"'{str(resource)} '{str(current_id)}' does not have access to '{req_id}'."
+            module,
+            f"'{str(resource)} '{str(current_id)}' does not have access to '{req_id}'.",
         )
 
 
 class LimitExceeded(AppError):
-    def __init__(self, resource, exceeded):
+    def __init__(self, module: str, resource, exceeded):
         self.resource = resource
         self.exceeded = exceeded
-        super().__init__(f"'{str(resource)}' limit of '{str(exceeded)}' exceeded.")
+        super().__init__(
+            module, f"'{str(resource)}' limit of '{str(exceeded)}' exceeded."
+        )
 
 
 class Unauthorized(AppError):
-    def __init__(self, resource, id):
+    def __init__(self, module: str, resource, id):
         self.resource = resource
         self.id = id
-        super().__init__(f"'{str(resource)}' '{str(id)}' unauthorized.")
+        super().__init__(module, f"'{str(resource)}' '{str(id)}' unauthorized.")
 
 
 class AlreadyExists(AppError):
-    def __init__(self, resource, id):
+    def __init__(self, module: str, resource, id):
         self.resource = resource
         self.id = id
-        super().__init__(f"'{str(resource)}' with data '{str(id)}' already exists.")
+        super().__init__(
+            module, f"'{str(resource)}' with data '{str(id)}' already exists."
+        )

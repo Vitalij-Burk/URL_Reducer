@@ -1,0 +1,32 @@
+from abc import ABC
+from abc import abstractmethod
+from typing import Generic
+from typing import TypeVar
+from uuid import UUID
+
+
+Entity = TypeVar("Entity")
+CreateDTO = TypeVar("CreateDTO")
+UpdateDTO = TypeVar("UpdateDTO")
+MoveDTO = TypeVar("MoveDTO")
+DeleteDTO = TypeVar("DeleteDTO")
+ResponseDTO = TypeVar("ResponseDTO")
+
+
+class IRepository(ABC, Generic[CreateDTO, UpdateDTO, MoveDTO, DeleteDTO, ResponseDTO]):
+    @abstractmethod
+    async def create(self, entity: CreateDTO) -> ResponseDTO: ...
+
+    @abstractmethod
+    async def get_by_id(self, id: UUID) -> ResponseDTO | None: ...
+
+    @abstractmethod
+    async def update(
+        self, id: UUID, update_params: UpdateDTO
+    ) -> ResponseDTO | None: ...
+
+    @abstractmethod
+    async def move(self, id: UUID, move_params: MoveDTO) -> ResponseDTO | None: ...
+
+    @abstractmethod
+    async def delete(self, id: UUID) -> DeleteDTO | None: ...

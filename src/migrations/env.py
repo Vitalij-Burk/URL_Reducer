@@ -4,8 +4,10 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from src.infrastructure.storages.db.dal.models import *
-from src.infrastructure.storages.db.dal.models import Base
+from src.core.db.base import Base
+from src.folders.infrastructure.storages.db.base.models import Folder
+from src.links.infrastructure.storages.db.base.models import Link
+from src.users.infrastructure.storages.db.base.models import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

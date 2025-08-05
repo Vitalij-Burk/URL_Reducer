@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from src.core.domain.schemas.dataclasses.user import CreateUserInner
-from src.core.domain.schemas.dataclasses.user import DeletedUserResponseInner
-from src.core.domain.schemas.dataclasses.user import UpdateUserRequestInner
-from src.core.domain.schemas.dataclasses.user import UserResponseInner
-from src.core.domain.schemas.pydantic.user import CreateUser
-from src.core.domain.schemas.pydantic.user import DeletedUserResponse
-from src.core.domain.schemas.pydantic.user import UpdateUserRequest
-from src.core.domain.schemas.pydantic.user import UserResponse
+from src.users.core.domain.schemas.inner.user import CreateUserRequestInner
+from src.users.core.domain.schemas.inner.user import DeletedUserResponseInner
+from src.users.core.domain.schemas.inner.user import UpdateUserRequestInner
+from src.users.core.domain.schemas.inner.user import UserResponseInner
+from src.users.core.domain.schemas.out.user import CreateUserRequest
+from src.users.core.domain.schemas.out.user import DeletedUserResponse
+from src.users.core.domain.schemas.out.user import UpdateUserRequest
+from src.users.core.domain.schemas.out.user import UserResponse
 
 
 @dataclass
@@ -20,8 +20,8 @@ class FakeUserCollection:
     safe_del: DeletedUserResponse
     inner_del: DeletedUserResponseInner
 
-    safe_create: CreateUser
-    inner_create: CreateUserInner
+    safe_create: CreateUserRequest
+    inner_create: CreateUserRequestInner
 
     safe_update: UpdateUserRequest
     inner_update: UpdateUserRequestInner
