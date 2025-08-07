@@ -20,6 +20,6 @@ def test_serialize_folder_to_cache(fake_folders):
     )
     assert str(fake_folders.inner_resp.user_id) == serialized_loaded_folder["user_id"]
     assert (
-        fake_folders.inner_resp.childred_ids == serialized_loaded_folder["childred_ids"]
+        fake_folders.inner_resp.children_ids == serialized_loaded_folder["children_ids"]
     )
     assert fake_folders.inner_resp.link_ids == serialized_loaded_folder["link_ids"]

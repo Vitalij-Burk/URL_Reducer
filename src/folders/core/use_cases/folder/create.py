@@ -1,4 +1,4 @@
-from src.folders.core.base_componenets.repositories.folder.db import IFolderRepository
+from src.folders.core.base_componenets.repositories.db import IFolderRepository
 from src.folders.core.domain.schemas.inner.folder import CreateFolderRequestInner
 from src.folders.core.domain.schemas.inner.folder import FolderResponseInner
 

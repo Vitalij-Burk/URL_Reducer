@@ -1,11 +1,12 @@
 from uuid import UUID
 
+import redis.exceptions
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.domain.exceptions.base import AppError
 from src.core.domain.logger import app_logger
-from src.folders.core.base_componenets.repositories.folder.db import IFolderRepository
+from src.folders.core.base_componenets.repositories.db import IFolderRepository
 from src.folders.core.domain.schemas.inner.folder import CreateFolderRequestInner
 from src.folders.core.domain.schemas.inner.folder import DeletedFolderResponseInner
 from src.folders.core.domain.schemas.inner.folder import FolderResponseInner
@@ -32,6 +33,8 @@ class FolderRepositoryManager(IFolderRepository):
         folder = None
         try:
             folder = await self.cache_uow.folders.get_by_id(id)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         except AppError as err:
             app_logger.info(f"Cache access error: '{err}'")
 
@@ -44,7 +47,12 @@ class FolderRepositoryManager(IFolderRepository):
         if folder is not None:
             try:
                 await self.cache_uow.folders.cache_by_id(folder.folder_id, folder)
-            except Exception as e:
+            except (
+                redis.exceptions.ConnectionError,
+                redis.exceptions.TimeoutError,
+            ) as err:
+                app_logger.error(f"Redis folder connection error: '{err}'")
+            except AppError as e:
                 app_logger.error(f"Cache error: {e}")
 
         return folder
@@ -57,6 +65,8 @@ class FolderRepositoryManager(IFolderRepository):
         try:
             await self.cache_uow.folders.delete_by_id(folder.folder_id)
             await self.cache_uow.folders.cache_by_id(folder.folder_id, folder)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             return folder
 
@@ -68,6 +78,8 @@ class FolderRepositoryManager(IFolderRepository):
         try:
             await self.cache_uow.folders.delete_by_id(folder.folder_id)
             await self.cache_uow.folders.cache_by_id(folder.folder_id, folder)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             return folder
 
@@ -76,6 +88,8 @@ class FolderRepositoryManager(IFolderRepository):
             folder = await uow.folders.get_by_id(id)
         try:
             await self.cache_uow.folders.delete_by_id(folder.folder_id)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             async with self.db_uow as uow:
                 deleted_folder_response = await self.db_uow.folders.delete(id)

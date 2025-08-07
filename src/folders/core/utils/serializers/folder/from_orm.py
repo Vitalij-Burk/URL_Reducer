@@ -14,7 +14,7 @@ def serialize_to_inner_folder(
         user_id=folder.user_id,
         name=folder.name,
         parent_id=folder.parent_id,
-        childred_ids=(
+        children_ids=(
             [child.folder_id for child in folder.children]
             if include_inner_fields
             else None

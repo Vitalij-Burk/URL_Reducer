@@ -14,7 +14,7 @@ from src.users.infrastructure.storages.db.base.session import get_db
 auth_router = APIRouter()
 
 
-@auth_router.post("/token", response_model=AccessToken)
+@auth_router.post("/token", response_model=AccessToken | None)
 async def login_by_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
@@ -25,15 +25,12 @@ async def login_by_access_token(
     return token
 
 
-@auth_router.post("/refresh", response_model=RefreshToken)
+@auth_router.post("/refresh", response_model=RefreshToken | None)
 async def login_by_refresh_token(
     refresh: str,
     db: AsyncSession = Depends(get_db),
     client: Redis = Depends(get_redis_client),
 ) -> RefreshToken:
     auth_service = AuthService(db, client)
-    refresh_token = await client.get(f"refresh:{refresh}")
-    token = await auth_service.login_by_refresh_token(
-        refresh_token=refresh_token.decode("utf-8")
-    )
+    token = await auth_service.login_by_refresh_token(refresh=refresh)
     return token

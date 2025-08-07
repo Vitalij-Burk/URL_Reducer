@@ -23,7 +23,6 @@ class UserResponseInner:
 
 @dataclass
 class UpdateUserRequestInner:
-    email: Optional[str] = None
     name: Optional[str] = None
 
 

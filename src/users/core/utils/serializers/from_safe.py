@@ -20,6 +20,5 @@ def serialize_to_update_inner_user(
     if update_user_params is None:
         return None
     return UpdateUserRequestInner(
-        email=str(update_user_params.email) if update_user_params.email else None,
         name=str(update_user_params.name) if update_user_params.name else None,
     )

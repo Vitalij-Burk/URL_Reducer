@@ -1,13 +1,22 @@
 from src.core.domain.exceptions.base import AlreadyExists
+from src.core.domain.exceptions.base import AppError
 from src.core.domain.exceptions.base import Forbidden
 from src.core.domain.exceptions.base import LimitExceeded
 from src.core.domain.exceptions.base import NotFound
+from src.core.domain.exceptions.base import Params
 from src.core.domain.exceptions.base import Unauthorized
 
 
 class FolderNotFound(NotFound):
     def __init__(self, id):
         super().__init__("folders", "Folder", id)
+
+
+class FolderNesting(AppError):
+    def __init__(self, folder_id, move_id):
+        self.folder_id = folder_id
+        self.move_id = move_id
+        super().__init__("folders", f"Folder {folder_id} can not be moved in {move_id}")
 
 
 class FolderForbidden(Forbidden):
@@ -28,3 +37,8 @@ class FolderUnauthorized(Unauthorized):
 class FolderAlreadyExists(AlreadyExists):
     def __init__(self, id):
         super().__init__("folders", "Folder", id)
+
+
+class FolderParams(Params):
+    def __init__(self, id):
+        super().__init__("folders", "Folder")

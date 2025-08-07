@@ -1,5 +1,6 @@
 from uuid import UUID
 
+import redis.exceptions
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +43,8 @@ class LinkRepositoryManager(ILinkRepository):
         link = None
         try:
             link = await self.cache_uow.links.get_by_id(id)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         except AppError as err:
             app_logger.info(f"Cache access error: '{err}'")
 
@@ -54,7 +57,12 @@ class LinkRepositoryManager(ILinkRepository):
         if link is not None:
             try:
                 await self._cache_link(link)
-            except Exception as e:
+            except (
+                redis.exceptions.ConnectionError,
+                redis.exceptions.TimeoutError,
+            ) as err:
+                app_logger.error(f"Redis folder connection error: '{err}'")
+            except AppError as e:
                 app_logger.error(f"Cache error: {e}")
 
         return link
@@ -63,6 +71,8 @@ class LinkRepositoryManager(ILinkRepository):
         link = None
         try:
             link = await self.cache_uow.links.get_by_short_code(short_code)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         except AppError as err:
             app_logger.info(f"Cache access error: '{err}'")
 
@@ -75,7 +85,12 @@ class LinkRepositoryManager(ILinkRepository):
         if link is not None:
             try:
                 await self._cache_link(link)
-            except Exception as e:
+            except (
+                redis.exceptions.ConnectionError,
+                redis.exceptions.TimeoutError,
+            ) as err:
+                app_logger.error(f"Redis folder connection error: '{err}'")
+            except AppError as e:
                 app_logger.error(f"Cache error: {e}")
 
         return link
@@ -83,24 +98,26 @@ class LinkRepositoryManager(ILinkRepository):
     async def update(
         self, id: UUID, update_link_params: UpdateLinkRequestInner
     ) -> LinkResponseInner | None:
-        print(type(update_link_params))
         async with self.db_uow as uow:
             link = await uow.links.update(id, update_link_params)
         try:
             await self._delete_cached_link(link)
             await self._cache_link(link)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             return link
 
     async def move(
         self, id: UUID, move_link_params: MoveLinkRequestInner
     ) -> LinkResponseInner | None:
-        print(type(move_link_params))
         async with self.db_uow as uow:
             link = await uow.links.move(id, move_link_params)
         try:
             await self._delete_cached_link(link)
             await self._cache_link(link)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             return link
 
@@ -109,6 +126,8 @@ class LinkRepositoryManager(ILinkRepository):
             link = await uow.links.get_by_id(id)
         try:
             await self._delete_cached_link(link)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             async with self.db_uow as uow:
                 deleted_link_response = await self.db_uow.links.delete(id)

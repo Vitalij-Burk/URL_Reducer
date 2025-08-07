@@ -3,7 +3,7 @@ from uuid import UUID
 
 from redis.asyncio import Redis
 
-from src.folders.core.base_componenets.repositories.folder.cache import (
+from src.folders.core.base_componenets.repositories.cache import (
     IFolderCacheRepository,
 )
 from src.folders.core.domain.schemas.inner.folder import FolderResponseInner
@@ -11,7 +11,7 @@ from src.folders.core.utils.serializers.folder.cache.out import (
     deserialize_folder_from_cache,
 )
 from src.folders.core.utils.serializers.folder.cache.to import serialize_folder_to_cache
-from src.folders.infrastructure.storages.cache.base.DAL.folder import FolderDAL
+from src.folders.infrastructure.storages.cache.base.DAL import FolderDAL
 
 
 class FolderRepository(IFolderCacheRepository):

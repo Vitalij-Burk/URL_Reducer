@@ -1,5 +1,7 @@
+import asyncio
 from uuid import UUID
 
+import redis.exceptions
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +44,8 @@ class UserRepositoryManager(IUserRepository):
         user = None
         try:
             user = await self.cache_uow.users.get_by_id(id)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         except AppError as err:
             app_logger.info(f"Cache access error: '{err}'")
 
@@ -54,6 +58,11 @@ class UserRepositoryManager(IUserRepository):
         if user is not None:
             try:
                 await self._cache_user(user)
+            except (
+                redis.exceptions.ConnectionError,
+                redis.exceptions.TimeoutError,
+            ) as err:
+                app_logger.error(f"Redis folder connection error: '{err}'")
             except AppError as err:
                 app_logger.error(f"Cache set error: {err}")
 
@@ -63,6 +72,8 @@ class UserRepositoryManager(IUserRepository):
         user = None
         try:
             user = await self.cache_uow.users.get_by_email(email)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         except AppError as err:
             app_logger.info(f"Cache access error: '{err}'")
 
@@ -75,8 +86,13 @@ class UserRepositoryManager(IUserRepository):
         if user is not None:
             try:
                 await self._cache_user(user)
+            except (
+                redis.exceptions.ConnectionError,
+                redis.exceptions.TimeoutError,
+            ) as err:
+                app_logger.error(f"Redis folder connection error: '{err}'")
             except AppError as err:
-                app_logger.error(f"Cache set error: '{err}'")
+                app_logger.error(f"Cache setting error: '{err}'")
 
         return user
 
@@ -87,6 +103,8 @@ class UserRepositoryManager(IUserRepository):
             user = await uow.users.update(id, update_user_params)
         try:
             await self._delete_cached_user(user)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             return user
 
@@ -95,6 +113,8 @@ class UserRepositoryManager(IUserRepository):
             user = await uow.users.get_by_id(id)
         try:
             await self._delete_cached_user(user)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis folder connection error: '{err}'")
         finally:
             async with self.db_uow as uow:
                 deleted_user_response = await uow.users.delete(id)

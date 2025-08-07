@@ -1,5 +1,9 @@
-from src.links.core.utils.serializers.link.from_safe import serialize_to_create_inner_link
-from src.links.core.utils.serializers.link.from_safe import serialize_to_update_inner_link
+from src.links.core.utils.serializers.link.from_safe import (
+    serialize_to_create_inner_link,
+)
+from src.links.core.utils.serializers.link.from_safe import (
+    serialize_to_update_inner_link,
+)
 
 
 def test_serialize_to_update_inner_link_success(fake_links):

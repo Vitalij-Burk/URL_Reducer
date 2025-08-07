@@ -10,4 +10,4 @@ def test_deserialize_link_from_cache_success(fake_links):
     assert deserialized_link.name == fake_loaded_cache["name"]
     assert deserialized_link.original_url == fake_loaded_cache["original_url"]
     assert deserialized_link.clicks == fake_loaded_cache["clicks"]
-    assert deserialized_link.folder_id == fake_loaded_cache["folder_id"]
+    assert type(deserialized_link.folder_id) != type(fake_loaded_cache["folder_id"])

@@ -3,6 +3,10 @@ from uuid import UUID
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.folders.infrastructure.storages.folder_repository_manager import (
+    FolderRepositoryManager,
+)
+from src.links.app.decorators import check_user_ownership_by_folder_id
 from src.links.app.decorators import check_user_ownership_by_link_id
 from src.links.app.guards import LinkGuard
 from src.links.core.domain.schemas.out.link import CreateLinkRequest
@@ -20,7 +24,9 @@ from src.links.core.utils.serializers.link.from_inner import (
     serialize_to_safe_deleted_link,
 )
 from src.links.core.utils.serializers.link.from_inner import serialize_to_safe_link
-from src.links.core.utils.serializers.link.from_safe import serialize_to_create_inner_link
+from src.links.core.utils.serializers.link.from_safe import (
+    serialize_to_create_inner_link,
+)
 from src.links.core.utils.serializers.link.from_safe import serialize_to_move_inner_link
 from src.links.core.utils.serializers.link.from_safe import (
     serialize_to_update_inner_link,
@@ -35,7 +41,8 @@ class LinkService:
         self.db = db
         self.client = client
         self.link_manager = LinkRepositoryManager(db, client)
-        self.guard = LinkGuard(self.link_manager)
+        self.folder_manager = FolderRepositoryManager(db, client)
+        self.guard = LinkGuard(self.link_manager, self.folder_manager)
         self.create_link_use_case = CreateLinkUseCase(repo=self.link_manager)
         self.get_link_by_id_use_case = GetLinkByIdUseCase(repo=self.link_manager)
         self.update_link_use_case = UpdateLinkUseCase(repo=self.link_manager)
@@ -69,6 +76,7 @@ class LinkService:
         )
 
     @check_user_ownership_by_link_id
+    @check_user_ownership_by_folder_id
     async def move_link(
         self, link_id: UUID, body: MoveLinkRequest, current_user_id: UUID
     ) -> LinkResponse:

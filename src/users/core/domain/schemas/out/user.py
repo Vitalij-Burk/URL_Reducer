@@ -56,7 +56,6 @@ class UserResponseOut(TunedModel):
 
 
 class UpdateUserRequest(TunedModel):
-    email: Optional[EmailStr] = None
     name: Optional[str] = Field(min_length=4, max_length=20)
 
     @field_validator("name")

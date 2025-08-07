@@ -1,3 +1,6 @@
+import asyncio.exceptions
+
+import redis.exceptions
 from fastapi.security import OAuth2PasswordRequestForm
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,21 +32,32 @@ class AuthService:
         token = await self.login_by_access_token_use_case.execute(
             form_data.username, form_data.password
         )
-        await self.client.set(
-            f"refresh:{token.refresh_token}",
-            token.refresh_token,
-            ex=60 * Config.REFRESH_TOKEN_EXPIRE_MINUTES,
-        )
-        app_logger.info(token.refresh_token)
-        return token
+        try:
+            await self.client.set(
+                f"refresh:{token.refresh_token}",
+                token.refresh_token,
+                ex=60 * Config.REFRESH_TOKEN_EXPIRE_MINUTES,
+            )
+            app_logger.info(token.refresh_token)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis auth connection error: '{err}'")
+        finally:
+            return token
 
-    async def login_by_refresh_token(self, refresh_token: str):
+    async def login_by_refresh_token(self, refresh: str):
+        refresh_token = await self.client.get(f"refresh:{refresh}")
+        if not refresh_token:
+            return None
         token = await self.login_by_refresh_token_use_case.execute(refresh_token)
-        await self.client.delete(f"refresh:{refresh_token}")
-        await self.client.set(
-            f"refresh:{token.refresh_token}",
-            token.refresh_token,
-            ex=60 * Config.REFRESH_TOKEN_EXPIRE_MINUTES,
-        )
-        app_logger.info(token.refresh_token)
-        return token
+        try:
+            await self.client.delete(f"refresh:{refresh_token}")
+            await self.client.set(
+                f"refresh:{token.refresh_token}",
+                token.refresh_token,
+                ex=60 * Config.REFRESH_TOKEN_EXPIRE_MINUTES,
+            )
+            app_logger.info(token.refresh_token)
+        except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as err:
+            app_logger.error(f"Redis auth connection error: '{err}'")
+        finally:
+            return token

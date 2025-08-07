@@ -4,11 +4,11 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.domain import logger
+from src.core.domain.logger import app_logger
 from src.core.utils.serializers.to_dict import serialize_to_dict_exclude_none
 from src.links.core.base_componenets.repositories.link.db import ILinkRepository
-from src.links.core.domain.exceptions.link import LinkAlreadyExists
 from src.links.core.domain.exceptions.link import LinkNotFound
+from src.links.core.domain.exceptions.link import LinkParams
 from src.links.core.domain.schemas.inner.link import CreateLinkRequestInner
 from src.links.core.domain.schemas.inner.link import DeletedLinkResponseInner
 from src.links.core.domain.schemas.inner.link import LinkResponseInner
@@ -27,8 +27,8 @@ class LinkRepository(ILinkRepository):
             new_link = await self.link_dal.create(**asdict(entity))
             return serialize_to_inner_link(new_link)
         except IntegrityError as err:
-            logger.error(err)
-            raise LinkAlreadyExists(str(entity))
+            app_logger.error(err)
+            raise LinkParams
 
     async def get_by_id(self, id: UUID) -> LinkResponseInner | None:
         link = await self.link_dal.get_by_id(id)

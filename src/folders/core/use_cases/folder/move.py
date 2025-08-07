@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from src.folders.core.base_componenets.repositories.folder.db import IFolderRepository
+from src.folders.core.base_componenets.repositories.db import IFolderRepository
 from src.folders.core.domain.schemas.inner.folder import FolderResponseInner
 from src.folders.core.domain.schemas.inner.folder import MoveFolderRequestInner
 

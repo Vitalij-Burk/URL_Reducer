@@ -12,7 +12,8 @@ from src.users.core.domain.schemas.inner.user import UserResponseInner
 async def test_check_user_ownership_by_link_id_success(fake_users, fake_links):
     current_user = fake_users.safe_resp
     mock_link_manager = AsyncMock()
-    guard = LinkGuard(mock_link_manager)
+    mock_folder_manager = AsyncMock()
+    guard = LinkGuard(mock_link_manager, mock_folder_manager)
     mock_link_manager.get_by_id.return_value = fake_links.inner_resp
     result = await guard.check_user_ownership_by_link_id(
         fake_links.safe_resp.link_id, current_user.user_id
@@ -31,7 +32,8 @@ async def test_check_user_ownership_by_link_id_forbidden(fake_links):
         folder_ids=[],
     )
     mock_link_manager = AsyncMock()
-    guard = LinkGuard(mock_link_manager)
+    mock_folder_manager = AsyncMock()
+    guard = LinkGuard(mock_link_manager, mock_folder_manager)
     mock_link_manager.get_by_id.return_value = fake_links.inner_resp
     with pytest.raises(LinkForbidden):
         await guard.check_user_ownership_by_link_id(

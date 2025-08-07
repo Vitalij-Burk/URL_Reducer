@@ -13,5 +13,5 @@ def test_deserialize_folder_from_cache_success(fake_folders):
     assert str(deserialized_folder.folder_id) == fake_loaded_cache["folder_id"]
     assert str(deserialized_folder.user_id) == fake_loaded_cache["user_id"]
     assert deserialized_folder.link_ids == fake_loaded_cache["link_ids"]
-    assert deserialized_folder.childred_ids == fake_loaded_cache["childred_ids"]
+    assert deserialized_folder.children_ids == fake_loaded_cache["children_ids"]
     assert deserialized_folder.parent_id == fake_loaded_cache["parent_id"]

@@ -1,5 +1,9 @@
-from src.folders.core.utils.serializers.folder.from_inner import serialize_to_safe_deleted_folder
-from src.folders.core.utils.serializers.folder.from_inner import serialize_to_safe_folder
+from src.folders.core.utils.serializers.folder.from_inner import (
+    serialize_to_safe_deleted_folder,
+)
+from src.folders.core.utils.serializers.folder.from_inner import (
+    serialize_to_safe_folder,
+)
 
 
 def test_serialize_to_safe_folder_success(fake_folders):
@@ -10,7 +14,7 @@ def test_serialize_to_safe_folder_success(fake_folders):
     assert serialized_folder.folder_id == fake_folders.inner_resp.folder_id
     assert serialized_folder.parent_id == fake_folders.inner_resp.parent_id
     assert serialized_folder.link_ids == fake_folders.inner_resp.link_ids
-    assert serialized_folder.childred_ids == fake_folders.inner_resp.childred_ids
+    assert serialized_folder.children_ids == fake_folders.inner_resp.children_ids
 
 
 def test_serialize_to_safe_folder_none():

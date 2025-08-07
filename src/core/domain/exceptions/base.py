@@ -47,3 +47,11 @@ class AlreadyExists(AppError):
         super().__init__(
             module, f"'{str(resource)}' with data '{str(id)}' already exists."
         )
+
+
+class Params(AppError):
+    def __init__(self, module: str, resource):
+        self.resource = resource
+        super().__init__(
+            module, f"'{str(resource)}' with current params could not be validated."
+        )

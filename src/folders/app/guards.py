@@ -15,4 +15,4 @@ class FolderGuard:
     ):
         folder = await self.folder_manager.get_by_id(folder_id)
         if folder.user_id != current_user_id:
-            raise FolderForbidden(folder.user_id, current_user_id)
+            raise FolderForbidden(current_user_id, folder.folder_id)

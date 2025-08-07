@@ -16,8 +16,8 @@ def serialize_to_safe_folder(
         name=folder.name,
         parent_id=folder.parent_id if folder.parent_id else None,
         user_id=folder.user_id,
-        childred_ids=(
-            [child_id for child_id in folder.childred_ids]
+        children_ids=(
+            [child_id for child_id in folder.children_ids]
             if include_inner_fields
             else []
         ),

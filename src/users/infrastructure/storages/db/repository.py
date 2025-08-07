@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.domain.logger import app_logger
 from src.core.utils.serializers.to_dict import serialize_to_dict_exclude_none
 from src.users.core.base_componenets.repositories.db import IUserRepository
-from src.users.core.domain.exceptions.user import UserAlreadyExists
 from src.users.core.domain.exceptions.user import UserNotFound
+from src.users.core.domain.exceptions.user import UserParams
 from src.users.core.domain.schemas.inner.user import CreateUserRequestInner
 from src.users.core.domain.schemas.inner.user import DeletedUserResponseInner
 from src.users.core.domain.schemas.inner.user import UpdateUserRequestInner
@@ -27,7 +27,7 @@ class UserRepository(IUserRepository):
             return serialize_to_inner_user(new_user)
         except IntegrityError as err:
             app_logger.error(err)
-            raise UserAlreadyExists(str(entity.email))
+            raise UserParams
 
     async def get_by_id(self, id: UUID) -> UserResponseInner | None:
         user = await self.user_dal.get_by_id(id)
@@ -44,7 +44,6 @@ class UserRepository(IUserRepository):
     async def update(
         self, id: UUID, update_user_params: UpdateUserRequestInner
     ) -> UserResponseInner | None:
-        print(serialize_to_dict_exclude_none(update_user_params))
         user = await self.user_dal.update(
             id, **serialize_to_dict_exclude_none(update_user_params)
         )

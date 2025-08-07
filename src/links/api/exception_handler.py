@@ -7,6 +7,7 @@ from src.links.core.domain.exceptions.link import LinkAlreadyExists
 from src.links.core.domain.exceptions.link import LinkForbidden
 from src.links.core.domain.exceptions.link import LinkLimitExceeded
 from src.links.core.domain.exceptions.link import LinkNotFound
+from src.links.core.domain.exceptions.link import LinkParams
 
 
 async def link_exception_handler(request: Request, exc: AppError):
@@ -34,6 +35,12 @@ async def link_exception_handler(request: Request, exc: AppError):
         return JSONResponse(
             status_code=409,
             content={"detail": f"Link '{exc.id}' already exists."},
+        )
+    if isinstance(exc, LinkParams):
+        app_logger.info(exc)
+        return JSONResponse(
+            status_code=422,
+            content={"detail": f"Link with current params could not be validated."},
         )
     app_logger.error("Unexpected exception: %s", exc, exc_info=True)
     return JSONResponse(

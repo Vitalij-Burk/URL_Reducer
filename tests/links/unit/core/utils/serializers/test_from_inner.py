@@ -1,4 +1,6 @@
-from src.links.core.utils.serializers.link.from_inner import serialize_to_safe_deleted_link
+from src.links.core.utils.serializers.link.from_inner import (
+    serialize_to_safe_deleted_link,
+)
 from src.links.core.utils.serializers.link.from_inner import serialize_to_safe_link
 
 

@@ -2,6 +2,7 @@ from src.core.domain.exceptions.base import AlreadyExists
 from src.core.domain.exceptions.base import Forbidden
 from src.core.domain.exceptions.base import LimitExceeded
 from src.core.domain.exceptions.base import NotFound
+from src.core.domain.exceptions.base import Params
 from src.core.domain.exceptions.base import Unauthorized
 
 
@@ -28,3 +29,8 @@ class LinkUnauthorized(Unauthorized):
 class LinkAlreadyExists(AlreadyExists):
     def __init__(self, id):
         super().__init__("links", "Link", id)
+
+
+class LinkParams(Params):
+    def __init__(self):
+        super().__init__("links", "Link")

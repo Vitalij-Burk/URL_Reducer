@@ -103,10 +103,8 @@ def fake_users():
         inner_create=CreateUserRequestInner(
             name=name, email=email, hashed_password=hashed_password
         ),
-        safe_update=UpdateUserRequest(
-            email=TypeAdapter(EmailStr).validate_python(email), name=name
-        ),
-        inner_update=UpdateUserRequestInner(email=email, name=name),
+        safe_update=UpdateUserRequest(name=name),
+        inner_update=UpdateUserRequestInner(name=name),
     )
 
 
@@ -174,7 +172,7 @@ def fake_links():
 def fake_folders():
     parent_id = None
     name = "string"
-    choldren_ids = []
+    children_ids = []
     link_ids = []
     return FakeFolderCollection(
         cache=json.dumps(
@@ -184,7 +182,7 @@ def fake_folders():
                     user_id=user_id,
                     parent_id=parent_id,
                     name=name,
-                    childred_ids=choldren_ids,
+                    children_ids=children_ids,
                     link_ids=link_ids,
                 )
             ),
@@ -195,7 +193,7 @@ def fake_folders():
             user_id=user_id,
             parent_id=parent_id,
             name=name,
-            childred_ids=choldren_ids,
+            children_ids=children_ids,
             link_ids=link_ids,
         ),
         inner_resp=FolderResponseInner(
@@ -203,7 +201,7 @@ def fake_folders():
             user_id=user_id,
             parent_id=parent_id,
             name=name,
-            childred_ids=choldren_ids,
+            children_ids=children_ids,
             link_ids=link_ids,
         ),
         safe_del=DeletedFolderResponse(deleted_folder_id=folder_id),

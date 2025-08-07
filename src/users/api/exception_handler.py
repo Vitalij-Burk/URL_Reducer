@@ -6,6 +6,7 @@ from src.core.domain.logger import app_logger
 from src.users.core.domain.exceptions.user import UserAlreadyExists
 from src.users.core.domain.exceptions.user import UserForbidden
 from src.users.core.domain.exceptions.user import UserNotFound
+from src.users.core.domain.exceptions.user import UserParams
 from src.users.core.domain.exceptions.user import UserUnauthorized
 
 
@@ -33,4 +34,10 @@ async def user_exception_handler(request: Request, exc: AppError):
         return JSONResponse(
             status_code=409,
             content={"detail": f"User '{exc.id}' already exists."},
+        )
+    if isinstance(exc, UserParams):
+        app_logger.info(exc)
+        return JSONResponse(
+            status_code=422,
+            content={"detail": f"User with current params could not be validated."},
         )

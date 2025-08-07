@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from src.folders.app.services.guards import FolderGuard
+from src.folders.app.guards import FolderGuard
 from src.folders.core.domain.exceptions.folder import FolderForbidden
 from src.users.core.domain.schemas.inner.user import UserResponseInner
 

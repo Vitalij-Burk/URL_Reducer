@@ -17,7 +17,7 @@ class FolderResponseInner:
     user_id: UUID
     name: str
     parent_id: Optional[UUID] = None
-    childred_ids: list[UUID] = field(default_factory=list)
+    children_ids: list[UUID] = field(default_factory=list)
     link_ids: list[UUID] = field(default_factory=list)
 
 

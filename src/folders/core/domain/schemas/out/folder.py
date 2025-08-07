@@ -22,7 +22,7 @@ class FolderResponse(TunedModel):
     user_id: UUID
     parent_id: Optional[UUID] = None
     name: str
-    childred_ids: list[UUID] = Field(default_factory=list)
+    children_ids: list[UUID] = Field(default_factory=list)
     link_ids: list[UUID] = Field(default_factory=list)
 
 

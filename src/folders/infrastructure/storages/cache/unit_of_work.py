@@ -1,7 +1,7 @@
 from redis.asyncio import Redis
 
 from src.folders.core.interfaces.repositories.units_of_work.cache import IUnitOfWork
-from src.folders.infrastructure.storages.cache.repositories.folder import (
+from src.folders.infrastructure.storages.cache.repository import (
     FolderRepository,
 )
 

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.folders.core.interfaces.repositories.units_of_work.db import IUnitOfWork
-from src.folders.infrastructure.storages.db.repositories.folder import FolderRepository
+from src.folders.infrastructure.storages.db.repository import FolderRepository
 
 
 class UnitOfWork(IUnitOfWork):

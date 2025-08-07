@@ -1,6 +1,12 @@
-from src.folders.core.utils.serializers.folder.from_safe import serialize_to_create_inner_folder
-from src.folders.core.utils.serializers.folder.from_safe import serialize_to_move_inner_folder
-from src.folders.core.utils.serializers.folder.from_safe import serialize_to_update_inner_folder
+from src.folders.core.utils.serializers.folder.from_safe import (
+    serialize_to_create_inner_folder,
+)
+from src.folders.core.utils.serializers.folder.from_safe import (
+    serialize_to_move_inner_folder,
+)
+from src.folders.core.utils.serializers.folder.from_safe import (
+    serialize_to_update_inner_folder,
+)
 
 
 def test_serialize_to_update_inner_folder_success(fake_folders):
